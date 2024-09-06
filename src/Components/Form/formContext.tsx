@@ -13,7 +13,7 @@ interface IFormInput {
 interface IFormInputContext {
   input: IFormInput | null;
   addInput: (input: IFormInput) => void;
-  updateInput: () => void;
+  updateInput: (input?: IFormInput) => void;
   deleteInput: () => void;
 }
 
@@ -61,7 +61,7 @@ export const FormContextProvider: React.FC<{ children: ReactNode }> = ({
       });
     }
 
-    if (input?.generalEnquiry) {
+    if (input?.generalEnquiry === true || input?.generalEnquiry === false) {
       setInput((prev) => {
         if (prev) {
           return { ...prev, generalEnquiry: input.generalEnquiry };
@@ -70,7 +70,7 @@ export const FormContextProvider: React.FC<{ children: ReactNode }> = ({
       });
     }
 
-    if (input?.supportRequest) {
+    if (input?.supportRequest === true || input?.supportRequest === false) {
       setInput((prev) => {
         if (prev) {
           return { ...prev, supportRequest: input.supportRequest };
@@ -88,7 +88,7 @@ export const FormContextProvider: React.FC<{ children: ReactNode }> = ({
       });
     }
 
-    if (input?.confirm) {
+    if (input?.confirm === true || input?.confirm === false) {
       setInput((prev) => {
         if (prev) {
           return { ...prev, confirm: input.confirm };

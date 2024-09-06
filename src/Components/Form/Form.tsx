@@ -1,5 +1,5 @@
 import React, { FormEvent, ReactNode, useRef } from "react";
-import { FormContextProvider } from "./formContext";
+import { FormContextProvider, useFormContext } from "./formContext";
 
 const InputFormLabel: React.FC<{ labelName: string }> = ({ labelName }) => {
   return <label htmlFor={labelName}>{labelName} *</label>;
@@ -43,6 +43,8 @@ const Form = () => {
   const messageRef = useRef<HTMLTextAreaElement>();
   const confirmRef = useRef<HTMLInputElement>();
 
+  const formCtx = useFormContext();
+
   const submitHandler = (e: FormEvent) => {
     e.preventDefault();
 
@@ -55,6 +57,7 @@ const Form = () => {
     const confirm = confirmRef.current?.value;
   };
 
+  console.log(formCtx?.input);
   return (
     <form
       className="min-h-screen w-[90%] rounded-2xl bg-white p-8 md:w-[46rem]"
@@ -69,6 +72,13 @@ const Form = () => {
               type="text"
               className="w-full outline-none"
               ref={firstNameRef as React.LegacyRef<HTMLInputElement>}
+              onChange={(e) => {
+                e.preventDefault();
+                const value = firstNameRef.current?.value;
+                if (value) {
+                  formCtx?.updateInput({ firstname: value });
+                }
+              }}
             />
           </InputTextLayout>
         </InputFormLayout>
@@ -79,6 +89,13 @@ const Form = () => {
               type="text"
               className="w-full outline-none"
               ref={lastNameRef as React.LegacyRef<HTMLInputElement>}
+              onChange={(e) => {
+                e.preventDefault();
+                const value = lastNameRef.current?.value;
+                if (value) {
+                  formCtx?.updateInput({ lastname: value });
+                }
+              }}
             />
           </InputTextLayout>
         </InputFormLayout>
@@ -89,6 +106,13 @@ const Form = () => {
               type="email"
               className="w-full outline-none"
               ref={mailRef as React.LegacyRef<HTMLInputElement>}
+              onChange={(e) => {
+                e.preventDefault();
+                const value = mailRef.current?.value;
+                if (value) {
+                  formCtx?.updateInput({ mail: value });
+                }
+              }}
             />
           </InputTextLayout>
         </InputFormLayout>
@@ -102,6 +126,17 @@ const Form = () => {
                   type="radio"
                   className="w-full outline-none"
                   ref={generalEnquiryRef as React.LegacyRef<HTMLInputElement>}
+                  onChange={() => {
+                    const value = generalEnquiryRef.current?.checked;
+
+                    formCtx?.updateInput({
+                      generalEnquiry: value,
+                      supportRequest: false,
+                    });
+                    if (value) {
+                      supportRequestRef!.current!.checked = false;
+                    }
+                  }}
                 />
               </div>
               <label htmlFor="General Enquiry">General Enquiry</label>
@@ -112,6 +147,17 @@ const Form = () => {
                   type="radio"
                   className="w-full outline-none"
                   ref={supportRequestRef as React.LegacyRef<HTMLInputElement>}
+                  onChange={() => {
+                    const value = supportRequestRef.current?.checked;
+
+                    formCtx?.updateInput({
+                      supportRequest: value,
+                      generalEnquiry: false,
+                    });
+                    if (value) {
+                      generalEnquiryRef!.current!.checked = false;
+                    }
+                  }}
                 />
               </div>
               <label htmlFor="Support Request">Support Request</label>
@@ -126,6 +172,14 @@ const Form = () => {
               id=""
               className="min-h-52 w-full outline-none"
               ref={messageRef as React.LegacyRef<HTMLTextAreaElement>}
+              onChange={(e) => {
+                e.preventDefault();
+                const value = messageRef.current?.value;
+
+                if (value) {
+                  formCtx?.updateInput({ message: value });
+                }
+              }}
             ></textarea>
           </InputTextAreaLayout>
         </InputFormLayout>
@@ -135,6 +189,13 @@ const Form = () => {
           type="checkbox"
           className="h-4 w-4"
           ref={confirmRef as React.LegacyRef<HTMLInputElement>}
+          onChange={() => {
+            const value = confirmRef.current?.checked;
+
+            formCtx?.updateInput({
+              confirm: value,
+            });
+          }}
         />
         <label htmlFor="">I consent to being contacted by the team *</label>
       </div>
