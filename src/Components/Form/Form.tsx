@@ -158,8 +158,11 @@ const Form = () => {
           <div
             className="flex items-center gap-4 hover:cursor-pointer"
             onClick={() => {
-              inputConfirmRef.current.checked = true;
-              setValue("confirm", true);
+              inputConfirmRef.current.checked =
+                !inputConfirmRef.current.checked;
+              const value = inputConfirmRef.current.checked;
+              console.log(value);
+              setValue("confirm", value);
             }}
           >
             <input
@@ -169,7 +172,8 @@ const Form = () => {
               ref={inputConfirmRef}
             />
             <label htmlFor="" className="hover:cursor-pointer">
-              I consent to being contacted by the team *
+              I consent to being contacted by the team{" "}
+              <span className="text-green-600">*</span>
             </label>
           </div>
           {errors.confirm && (
