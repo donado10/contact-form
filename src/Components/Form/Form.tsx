@@ -1,19 +1,28 @@
-import React, { FormEvent, ReactNode, useRef } from "react";
-import { FormContextProvider, useFormContext } from "./formContext";
+import React, { ReactNode, useRef } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
 
 const InputFormLabel: React.FC<{ labelName: string }> = ({ labelName }) => {
   return <label htmlFor={labelName}>{labelName} *</label>;
 };
 const InputFormLayout: React.FC<{ children: ReactNode }> = ({ children }) => {
-  return <div className="flex flex-col gap-2">{children}</div>;
+  return (
+    <div className="flex flex-col gap-2 hover:cursor-pointer">{children}</div>
+  );
 };
 
-const InputTextLayout: React.FC<{ children: ReactNode }> = ({ children }) => {
-  return (
-    <div className="flex h-10 w-full items-center justify-center rounded-md border-[1px] border-gray-500 p-1">
-      {children}
-    </div>
-  );
+const InputTextLayout: React.FC<{ children: ReactNode; isError?: boolean }> = ({
+  children,
+  isError = false,
+}) => {
+  let classname =
+    "flex h-10 w-full items-center justify-center rounded-md border-[1px] border-gray-500 p-1 hover:border-green-800";
+
+  if (isError) {
+    classname =
+      "flex h-10 w-full items-center justify-center rounded-md border-[1px] border-red-600 p-1";
+  }
+
+  return <div className={classname}>{children}</div>;
 };
 
 const InputRadioLayout: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -24,97 +33,96 @@ const InputRadioLayout: React.FC<{ children: ReactNode }> = ({ children }) => {
   );
 };
 
-const InputTextAreaLayout: React.FC<{ children: ReactNode }> = ({
-  children,
-}) => {
-  return (
-    <div className="flex h-fit w-full items-center gap-4 rounded-md border-[1px] border-gray-500 p-1">
-      {children}
-    </div>
-  );
+const InputTextAreaLayout: React.FC<{
+  children: ReactNode;
+  isError?: boolean;
+}> = ({ children, isError = false }) => {
+  let classname =
+    "flex h-fit w-full items-center gap-4 rounded-md border-[1px] border-gray-500 p-1 hover:border-green-800 ";
+
+  if (isError) {
+    classname =
+      "flex h-fit w-full items-center gap-4 rounded-md border-[1px] border-red-600 p-1";
+  }
+
+  return <div className={classname}>{children}</div>;
 };
 
+const ErrorMessage: React.FC<{ message: string }> = ({ message }) => {
+  return <span className="text-base text-red-600">{message}</span>;
+};
+
+interface IFormInput {
+  firstname?: string;
+  lastname?: string;
+  mail?: string;
+  generalEnquiry?: boolean;
+  supportRequest?: boolean;
+  message?: string;
+  confirm?: boolean;
+}
+
 const Form = () => {
-  const firstNameRef = useRef<HTMLInputElement>();
-  const lastNameRef = useRef<HTMLInputElement>();
-  const mailRef = useRef<HTMLInputElement>();
-  const generalEnquiryRef = useRef<HTMLInputElement>();
-  const supportRequestRef = useRef<HTMLInputElement>();
-  const messageRef = useRef<HTMLTextAreaElement>();
-  const confirmRef = useRef<HTMLInputElement>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<IFormInput>();
 
-  const formCtx = useFormContext();
+  const generalEnquiryRef =
+    useRef() as React.MutableRefObject<HTMLInputElement>;
+  const supportRequestRef =
+    useRef() as React.MutableRefObject<HTMLInputElement>;
 
-  const submitHandler = (e: FormEvent) => {
-    e.preventDefault();
-
-    const firstName = firstNameRef.current?.value;
-    const lastName = lastNameRef.current?.value;
-    const mail = mailRef.current?.value;
-    const generalEnquiry = generalEnquiryRef.current?.value;
-    const supportRequest = generalEnquiryRef.current?.value;
-    const message = messageRef.current?.value;
-    const confirm = confirmRef.current?.value;
+  const submitHandler: SubmitHandler<IFormInput> = (data) => {
+    console.log(data);
   };
-
-  console.log(formCtx?.input);
   return (
     <form
       className="min-h-screen w-[90%] rounded-2xl bg-white p-8 md:w-[46rem]"
-      onSubmit={submitHandler}
+      onSubmit={handleSubmit(submitHandler)}
     >
       <h1 className="mb-8 flex items-center text-3xl font-bold">Contact Us</h1>
       <div className="flex flex-col justify-center gap-4">
         <InputFormLayout>
           <InputFormLabel labelName="First Name" />
-          <InputTextLayout>
+          <InputTextLayout isError={errors.firstname && true}>
             <input
               type="text"
               className="w-full outline-none"
-              ref={firstNameRef as React.LegacyRef<HTMLInputElement>}
-              onChange={(e) => {
-                e.preventDefault();
-                const value = firstNameRef.current?.value;
-                if (value) {
-                  formCtx?.updateInput({ firstname: value });
-                }
-              }}
+              {...register("firstname", { required: true })}
             />
           </InputTextLayout>
+          {errors.firstname && (
+            <ErrorMessage message="This field is required" />
+          )}
         </InputFormLayout>
         <InputFormLayout>
           <InputFormLabel labelName="Last Name" />
-          <InputTextLayout>
+          <InputTextLayout isError={errors.lastname && true}>
             <input
               type="text"
               className="w-full outline-none"
-              ref={lastNameRef as React.LegacyRef<HTMLInputElement>}
-              onChange={(e) => {
-                e.preventDefault();
-                const value = lastNameRef.current?.value;
-                if (value) {
-                  formCtx?.updateInput({ lastname: value });
-                }
-              }}
+              {...register("lastname", { required: true })}
             />
           </InputTextLayout>
+          {errors.lastname && <ErrorMessage message="This field is required" />}
         </InputFormLayout>
         <InputFormLayout>
           <InputFormLabel labelName="Email Address" />
-          <InputTextLayout>
+          <InputTextLayout isError={errors.mail && true}>
             <input
               type="email"
               className="w-full outline-none"
-              ref={mailRef as React.LegacyRef<HTMLInputElement>}
-              onChange={(e) => {
-                e.preventDefault();
-                const value = mailRef.current?.value;
-                if (value) {
-                  formCtx?.updateInput({ mail: value });
-                }
-              }}
+              {...register("mail", {
+                required: true,
+                pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+              })}
             />
           </InputTextLayout>
+          {errors.mail && (
+            <ErrorMessage message="Please enter a valid email address" />
+          )}
         </InputFormLayout>
 
         <InputFormLayout>
@@ -125,17 +133,14 @@ const Form = () => {
                 <input
                   type="radio"
                   className="w-full outline-none"
-                  ref={generalEnquiryRef as React.LegacyRef<HTMLInputElement>}
+                  {...register("generalEnquiry", {
+                    validate: () =>
+                      generalEnquiryRef.current.checked ||
+                      supportRequestRef.current.checked,
+                  })}
+                  ref={generalEnquiryRef}
                   onChange={() => {
-                    const value = generalEnquiryRef.current?.checked;
-
-                    formCtx?.updateInput({
-                      generalEnquiry: value,
-                      supportRequest: false,
-                    });
-                    if (value) {
-                      supportRequestRef!.current!.checked = false;
-                    }
+                    supportRequestRef.current.checked = false;
                   }}
                 />
               </div>
@@ -146,62 +151,55 @@ const Form = () => {
                 <input
                   type="radio"
                   className="w-full outline-none"
-                  ref={supportRequestRef as React.LegacyRef<HTMLInputElement>}
+                  {...register("supportRequest", {
+                    validate: () =>
+                      generalEnquiryRef.current.checked ||
+                      supportRequestRef.current.checked,
+                  })}
+                  ref={supportRequestRef}
                   onChange={() => {
-                    const value = supportRequestRef.current?.checked;
-
-                    formCtx?.updateInput({
-                      supportRequest: value,
-                      generalEnquiry: false,
-                    });
-                    if (value) {
-                      generalEnquiryRef!.current!.checked = false;
-                    }
+                    generalEnquiryRef.current.checked = false;
                   }}
                 />
               </div>
               <label htmlFor="Support Request">Support Request</label>
             </InputRadioLayout>
           </div>
+          {(errors.generalEnquiry || errors.supportRequest) && (
+            <ErrorMessage message="Please select a query type" />
+          )}
         </InputFormLayout>
         <InputFormLayout>
           <InputFormLabel labelName="Message" />
-          <InputTextAreaLayout>
+          <InputTextAreaLayout isError={errors.message && true}>
             <textarea
-              name=""
               id=""
               className="min-h-52 w-full outline-none"
-              ref={messageRef as React.LegacyRef<HTMLTextAreaElement>}
-              onChange={(e) => {
-                e.preventDefault();
-                const value = messageRef.current?.value;
-
-                if (value) {
-                  formCtx?.updateInput({ message: value });
-                }
-              }}
+              {...register("message", {
+                required: true,
+                minLength: 1,
+              })}
             ></textarea>
           </InputTextAreaLayout>
+          {errors.message && <ErrorMessage message="This field is required" />}
         </InputFormLayout>
       </div>
-      <div className="mt-8 flex items-center gap-4">
-        <input
-          type="checkbox"
-          className="h-4 w-4"
-          ref={confirmRef as React.LegacyRef<HTMLInputElement>}
-          onChange={() => {
-            const value = confirmRef.current?.checked;
-
-            formCtx?.updateInput({
-              confirm: value,
-            });
-          }}
-        />
-        <label htmlFor="">I consent to being contacted by the team *</label>
+      <div className="mt-8">
+        <div className="flex items-center gap-4">
+          <input
+            type="checkbox"
+            className="h-4 w-4 accent-green-800 hover:cursor-pointer"
+            {...register("confirm", { required: true })}
+          />
+          <label htmlFor="">I consent to being contacted by the team *</label>
+        </div>
+        {errors.confirm && (
+          <ErrorMessage message="To submit this form, please consent to being contacted" />
+        )}
       </div>
       <button
-        className="mt-8 flex h-10 w-full items-center justify-center rounded-md bg-green-600"
-        onSubmit={submitHandler}
+        className="hover: mt-8 flex h-10 w-full items-center justify-center rounded-md bg-green-800"
+        onSubmit={handleSubmit(submitHandler)}
       >
         <span className="text-white">Submit</span>
       </button>
