@@ -161,7 +161,6 @@ const Form = () => {
               inputConfirmRef.current.checked =
                 !inputConfirmRef.current.checked;
               const value = inputConfirmRef.current.checked;
-              console.log(value);
               setValue("confirm", value);
             }}
           >
