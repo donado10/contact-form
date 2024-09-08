@@ -1,104 +1,17 @@
-import React, { ReactNode, useEffect, useRef, useState } from "react";
-import { SubmitHandler, useFieldArray, useForm } from "react-hook-form";
+import { useEffect, useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
 
-import SuccessIcon from "../../assets/images/icon-success-check.svg";
+import {
+  ErrorMessage,
+  IFormInput,
+  InputFormLabel,
+  InputFormLayout,
+  InputTextAreaLayout,
+  InputTextLayout,
+  ValidFormMessage,
+} from "./FormElements";
 
-const InputFormLabel: React.FC<{ labelName: string }> = ({ labelName }) => {
-  return <label htmlFor={labelName}>{labelName} *</label>;
-};
-const InputFormLayout: React.FC<{ children: ReactNode }> = ({ children }) => {
-  return (
-    <div className="flex flex-col gap-2 hover:cursor-pointer">{children}</div>
-  );
-};
-
-const InputTextLayout: React.FC<{ children: ReactNode; isError?: boolean }> = ({
-  children,
-  isError = false,
-}) => {
-  let classname =
-    "flex h-10 w-full items-center justify-center rounded-md border-[1px] border-gray-500 p-1 hover:border-green-800";
-
-  if (isError) {
-    classname =
-      "flex h-10 w-full items-center justify-center rounded-md border-[1px] border-red-600 p-1";
-  }
-
-  return <div className={classname}>{children}</div>;
-};
-
-interface IInputRadioLayout extends React.HTMLAttributes<HTMLDivElement> {
-  children: ReactNode;
-  isSelected?: boolean;
-}
-
-const InputRadioLayout: React.FC<IInputRadioLayout> = React.forwardRef(
-  ({ children, isSelected = false, ...props }, ref) => {
-    let classname =
-      "flex h-10 w-full items-center gap-5 pl-6 rounded-md border-[1px] border-gray-500 p-1";
-
-    if (isSelected) {
-      classname =
-        "flex h-10 w-full items-center gap-5 pl-6 rounded-md border-[1px] border-green-800 bg-green-200 p-1";
-    }
-
-    return (
-      <div className={classname} {...props}>
-        {children}
-      </div>
-    );
-  },
-);
-
-const InputTextAreaLayout: React.FC<{
-  children: ReactNode;
-  isError?: boolean;
-}> = ({ children, isError = false }) => {
-  let classname =
-    "flex h-fit w-full items-center gap-4 rounded-md border-[1px] border-gray-500 p-1 hover:border-green-800 ";
-
-  if (isError) {
-    classname =
-      "flex h-fit w-full items-center gap-4 rounded-md border-[1px] border-red-600 p-1";
-  }
-
-  return <div className={classname}>{children}</div>;
-};
-
-const ErrorMessage: React.FC<{ message: string }> = ({ message }) => {
-  return <span className="text-base text-red-600">{message}</span>;
-};
-
-interface IFormInput {
-  firstname?: string;
-  lastname?: string;
-  mail?: string;
-  generalEnquiry?: boolean;
-  supportRequest?: boolean;
-  message?: string;
-  confirm?: boolean;
-}
-
-const ValidFormMessage = () => {
-  const animate =
-    "animate-fade-down animate-duration-[500ms] animate-ease-in-out ";
-
-  return (
-    <div
-      className={`fixed top-4 flex w-[87%] flex-col justify-center gap-4 rounded-lg bg-gray-900 p-4 text-white md:max-w-[28rem] ${animate}`}
-    >
-      <div className="ml-3 flex items-center gap-3">
-        <span>
-          <img src={SuccessIcon} alt="success" />
-        </span>
-        <span className="text-base">Message Sent!</span>
-      </div>
-      <p className="font-light text-green-200">
-        Thanks for completing the form. We’ll be in touch soon!
-      </p>
-    </div>
-  );
-};
+import InputRadio from "./InputRadio";
 
 const Form = () => {
   const {
@@ -113,11 +26,6 @@ const Form = () => {
     useState<boolean>(false);
   const [inputSupportRequestRadioCheck, setInputSupportRequestRadioCheck] =
     useState<boolean>(false);
-
-  const generalEnquiryRef =
-    useRef() as React.MutableRefObject<HTMLInputElement>;
-  const supportRequestRef =
-    useRef() as React.MutableRefObject<HTMLInputElement>;
 
   const submitHandler: SubmitHandler<IFormInput> = (data) => {
     reset();
@@ -148,7 +56,7 @@ const Form = () => {
               <input
                 autoComplete="new-off"
                 type="text"
-                className="w-full outline-none"
+                className="w-full bg-transparent outline-none"
                 {...register("firstname", { required: true })}
               />
             </InputTextLayout>
@@ -191,72 +99,37 @@ const Form = () => {
           <InputFormLayout>
             <InputFormLabel labelName="Query Type" />
             <div className="flex flex-col justify-center gap-2 md:flex-row">
-              <InputRadioLayout
+              <InputRadio
                 isSelected={inputGeneralEnquiryRadioCheck}
                 {...register("generalEnquiry", {
                   value: inputGeneralEnquiryRadioCheck,
                   validate: () =>
-                    generalEnquiryRef.current.checked ||
-                    supportRequestRef.current.checked,
+                    inputSupportRequestRadioCheck ||
+                    inputGeneralEnquiryRadioCheck,
                 })}
                 onClick={() => {
                   setValue("generalEnquiry", true);
                   setValue("supportRequest", false);
-                  generalEnquiryRef.current.checked = true;
-                  supportRequestRef.current.checked = false;
                   setInputSupportRequestRadioCheck(false);
                   setInputGeneralEnquiryRadioCheck(true);
                 }}
-              >
-                <div className="grid place-items-center">
-                  <input
-                    type="radio"
-                    className={`col-start-1 row-start-1 h-4 w-4 appearance-none rounded-full border-[2px] ${generalEnquiryRef.current?.checked ? "border-green-800" : ""}`}
-                    ref={generalEnquiryRef}
-                  />
-                  {generalEnquiryRef.current?.checked && (
-                    <div
-                      className={`col-start-1 row-start-1 h-2 w-2 rounded-full bg-green-800`}
-                    ></div>
-                  )}
-                </div>
-                <label htmlFor="General Enquiry">General Enquiry</label>
-              </InputRadioLayout>
-              <InputRadioLayout
+                labelName="General Enquiry"
+              />
+              <InputRadio
                 isSelected={inputSupportRequestRadioCheck}
                 {...register("supportRequest", {
                   validate: () =>
-                    generalEnquiryRef.current.checked ||
-                    supportRequestRef.current.checked,
+                    inputSupportRequestRadioCheck ||
+                    inputGeneralEnquiryRadioCheck,
                 })}
                 onClick={() => {
                   setValue("generalEnquiry", false);
                   setValue("supportRequest", true);
-                  generalEnquiryRef.current.checked = false;
-                  supportRequestRef.current.checked = true;
                   setInputSupportRequestRadioCheck(true);
                   setInputGeneralEnquiryRadioCheck(false);
                 }}
-              >
-                <div className="grid place-items-center">
-                  <input
-                    type="radio"
-                    className={`col-start-1 row-start-1 h-4 w-4 appearance-none rounded-full border-[2px] ${supportRequestRef.current?.checked ? "border-green-800" : ""}`}
-                    {...register("supportRequest", {
-                      validate: () =>
-                        generalEnquiryRef.current.checked ||
-                        supportRequestRef.current.checked,
-                    })}
-                    ref={supportRequestRef}
-                  />
-                  {supportRequestRef.current?.checked && (
-                    <div
-                      className={`col-start-1 row-start-1 h-2 w-2 rounded-full bg-green-800`}
-                    ></div>
-                  )}
-                </div>
-                <label htmlFor="Support Request">Support Request</label>
-              </InputRadioLayout>
+                labelName="Support Request"
+              />
             </div>
             {(errors.generalEnquiry || errors.supportRequest) && (
               <ErrorMessage message="Please select a query type" />
