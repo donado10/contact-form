@@ -1,5 +1,7 @@
-import React, { ReactNode, useRef, useState } from "react";
+import React, { ReactNode, useEffect, useRef, useState } from "react";
 import { SubmitHandler, useFieldArray, useForm } from "react-hook-form";
+
+import SuccessIcon from "../../assets/images/icon-success-check.svg";
 
 const InputFormLabel: React.FC<{ labelName: string }> = ({ labelName }) => {
   return <label htmlFor={labelName}>{labelName} *</label>;
@@ -77,12 +79,34 @@ interface IFormInput {
   confirm?: boolean;
 }
 
+const ValidFormMessage = () => {
+  const animate =
+    "animate-fade-down animate-duration-[500ms] animate-ease-in-out ";
+
+  return (
+    <div
+      className={`fixed top-4 flex w-[87%] flex-col justify-center gap-4 rounded-lg bg-gray-900 p-4 text-white md:max-w-[28rem] ${animate}`}
+    >
+      <div className="ml-3 flex items-center gap-3">
+        <span>
+          <img src={SuccessIcon} alt="success" />
+        </span>
+        <span className="text-base">Message Sent!</span>
+      </div>
+      <p className="font-light text-green-200">
+        Thanks for completing the form. We’ll be in touch soon!
+      </p>
+    </div>
+  );
+};
+
 const Form = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitSuccessful },
     setValue,
+    reset,
   } = useForm<IFormInput>();
 
   const [inputGeneralEnquiryRadioCheck, setInputGeneralEnquiryRadioCheck] =
@@ -96,176 +120,186 @@ const Form = () => {
     useRef() as React.MutableRefObject<HTMLInputElement>;
 
   const submitHandler: SubmitHandler<IFormInput> = (data) => {
-    console.log(data);
+    reset();
+    setInputGeneralEnquiryRadioCheck(false);
+    setInputSupportRequestRadioCheck(false);
   };
 
-  return (
-    <form
-      className="min-h-screen w-[90%] rounded-2xl bg-white p-8 md:w-[46rem]"
-      onSubmit={handleSubmit(submitHandler)}
-    >
-      <h1 className="mb-8 flex items-center text-3xl font-bold">Contact Us</h1>
-      <div className="flex flex-col justify-center gap-4">
-        <InputFormLayout>
-          <InputFormLabel labelName="First Name" />
-          <InputTextLayout isError={errors.firstname && true}>
-            <input
-              type="text"
-              className="w-full outline-none"
-              {...register("firstname", { required: true })}
-            />
-          </InputTextLayout>
-          {errors.firstname && (
-            <ErrorMessage message="This field is required" />
-          )}
-        </InputFormLayout>
-        <InputFormLayout>
-          <InputFormLabel labelName="Last Name" />
-          <InputTextLayout isError={errors.lastname && true}>
-            <input
-              type="text"
-              className="w-full outline-none"
-              {...register("lastname", { required: true })}
-            />
-          </InputTextLayout>
-          {errors.lastname && <ErrorMessage message="This field is required" />}
-        </InputFormLayout>
-        <InputFormLayout>
-          <InputFormLabel labelName="Email Address" />
-          <InputTextLayout isError={errors.mail && true}>
-            <input
-              type="email"
-              className="w-full outline-none"
-              {...register("mail", {
-                required: true,
-                pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-              })}
-            />
-          </InputTextLayout>
-          {errors.mail && (
-            <ErrorMessage message="Please enter a valid email address" />
-          )}
-        </InputFormLayout>
+  useEffect(() => {
+    setTimeout(() => {
+      reset();
+    }, 3000);
+  }, [isSubmitSuccessful]);
 
-        <InputFormLayout>
-          <InputFormLabel labelName="Query Type" />
-          <div className="flex flex-col justify-center gap-2 md:flex-row">
-            <InputRadioLayout
-              isSelected={inputGeneralEnquiryRadioCheck}
-              {...register("generalEnquiry", {
-                value: inputGeneralEnquiryRadioCheck,
-                validate: () =>
-                  generalEnquiryRef.current.checked ||
-                  supportRequestRef.current.checked,
-              })}
-              onClick={() => {
-                setValue("generalEnquiry", true);
-                setValue("supportRequest", false);
-                generalEnquiryRef.current.checked = true;
-                supportRequestRef.current.checked = false;
-                setInputSupportRequestRadioCheck(false);
-                setInputGeneralEnquiryRadioCheck(true);
-              }}
-            >
-              <div className="grid place-items-center">
-                <input
-                  type="radio"
-                  className={`col-start-1 row-start-1 h-4 w-4 appearance-none rounded-full border-[2px] ${generalEnquiryRef.current?.checked ? "border-green-800" : ""}`}
-                  ref={generalEnquiryRef}
-                  onChange={() => {
-                    supportRequestRef.current.checked = false;
-                    setInputSupportRequestRadioCheck(false);
-                    setInputGeneralEnquiryRadioCheck(true);
-                  }}
-                />
-                {generalEnquiryRef.current?.checked && (
-                  <div
-                    className={`col-start-1 row-start-1 h-2 w-2 rounded-full bg-green-800`}
-                  ></div>
-                )}
-              </div>
-              <label htmlFor="General Enquiry">General Enquiry</label>
-            </InputRadioLayout>
-            <InputRadioLayout
-              isSelected={inputSupportRequestRadioCheck}
-              {...register("supportRequest", {
-                validate: () =>
-                  generalEnquiryRef.current.checked ||
-                  supportRequestRef.current.checked,
-              })}
-              onClick={() => {
-                setValue("generalEnquiry", false);
-                setValue("supportRequest", true);
-                generalEnquiryRef.current.checked = false;
-                supportRequestRef.current.checked = true;
-                setInputSupportRequestRadioCheck(true);
-                setInputGeneralEnquiryRadioCheck(false);
-              }}
-            >
-              <div className="grid place-items-center">
-                <input
-                  type="radio"
-                  className={`col-start-1 row-start-1 h-4 w-4 appearance-none rounded-full border-[2px] ${supportRequestRef.current?.checked ? "border-green-800" : ""}`}
-                  {...register("supportRequest", {
-                    validate: () =>
-                      generalEnquiryRef.current.checked ||
-                      supportRequestRef.current.checked,
-                  })}
-                  ref={supportRequestRef}
-                  onChange={() => {
-                    generalEnquiryRef.current.checked = false;
-                    setInputSupportRequestRadioCheck(true);
-                    setInputGeneralEnquiryRadioCheck(false);
-                  }}
-                />
-                {supportRequestRef.current?.checked && (
-                  <div
-                    className={`col-start-1 row-start-1 h-2 w-2 rounded-full bg-green-800`}
-                  ></div>
-                )}
-              </div>
-              <label htmlFor="Support Request">Support Request</label>
-            </InputRadioLayout>
-          </div>
-          {(errors.generalEnquiry || errors.supportRequest) && (
-            <ErrorMessage message="Please select a query type" />
-          )}
-        </InputFormLayout>
-        <InputFormLayout>
-          <InputFormLabel labelName="Message" />
-          <InputTextAreaLayout isError={errors.message && true}>
-            <textarea
-              id=""
-              className="min-h-52 w-full outline-none"
-              {...register("message", {
-                required: true,
-                minLength: 1,
-              })}
-            ></textarea>
-          </InputTextAreaLayout>
-          {errors.message && <ErrorMessage message="This field is required" />}
-        </InputFormLayout>
-      </div>
-      <div className="mt-8">
-        <div className="flex items-center gap-4">
-          <input
-            type="checkbox"
-            className="h-4 w-4 accent-green-800 hover:cursor-pointer"
-            {...register("confirm", { required: true })}
-          />
-          <label htmlFor="">I consent to being contacted by the team *</label>
-        </div>
-        {errors.confirm && (
-          <ErrorMessage message="To submit this form, please consent to being contacted" />
-        )}
-      </div>
-      <button
-        className="hover: mt-8 flex h-10 w-full items-center justify-center rounded-md bg-green-800"
+  return (
+    <>
+      {isSubmitSuccessful && <ValidFormMessage />}
+      <form
+        className="min-h-screen w-[90%] rounded-2xl bg-white p-8 md:w-[46rem]"
         onSubmit={handleSubmit(submitHandler)}
       >
-        <span className="text-white">Submit</span>
-      </button>
-    </form>
+        <h1 className="mb-8 flex items-center text-3xl font-bold">
+          Contact Us
+        </h1>
+        <div className="flex flex-col justify-center gap-4">
+          <InputFormLayout>
+            <InputFormLabel labelName="First Name" />
+            <InputTextLayout isError={errors.firstname && true}>
+              <input
+                autoComplete="new-off"
+                type="text"
+                className="w-full outline-none"
+                {...register("firstname", { required: true })}
+              />
+            </InputTextLayout>
+            {errors.firstname && (
+              <ErrorMessage message="This field is required" />
+            )}
+          </InputFormLayout>
+          <InputFormLayout>
+            <InputFormLabel labelName="Last Name" />
+            <InputTextLayout isError={errors.lastname && true}>
+              <input
+                autoComplete="new-off"
+                type="text"
+                className="w-full outline-none"
+                {...register("lastname", { required: true })}
+              />
+            </InputTextLayout>
+            {errors.lastname && (
+              <ErrorMessage message="This field is required" />
+            )}
+          </InputFormLayout>
+          <InputFormLayout>
+            <InputFormLabel labelName="Email Address" />
+            <InputTextLayout isError={errors.mail && true}>
+              <input
+                autoComplete="new-off"
+                type="email"
+                className="w-full outline-none"
+                {...register("mail", {
+                  required: true,
+                  pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                })}
+              />
+            </InputTextLayout>
+            {errors.mail && (
+              <ErrorMessage message="Please enter a valid email address" />
+            )}
+          </InputFormLayout>
+
+          <InputFormLayout>
+            <InputFormLabel labelName="Query Type" />
+            <div className="flex flex-col justify-center gap-2 md:flex-row">
+              <InputRadioLayout
+                isSelected={inputGeneralEnquiryRadioCheck}
+                {...register("generalEnquiry", {
+                  value: inputGeneralEnquiryRadioCheck,
+                  validate: () =>
+                    generalEnquiryRef.current.checked ||
+                    supportRequestRef.current.checked,
+                })}
+                onClick={() => {
+                  setValue("generalEnquiry", true);
+                  setValue("supportRequest", false);
+                  generalEnquiryRef.current.checked = true;
+                  supportRequestRef.current.checked = false;
+                  setInputSupportRequestRadioCheck(false);
+                  setInputGeneralEnquiryRadioCheck(true);
+                }}
+              >
+                <div className="grid place-items-center">
+                  <input
+                    type="radio"
+                    className={`col-start-1 row-start-1 h-4 w-4 appearance-none rounded-full border-[2px] ${generalEnquiryRef.current?.checked ? "border-green-800" : ""}`}
+                    ref={generalEnquiryRef}
+                  />
+                  {generalEnquiryRef.current?.checked && (
+                    <div
+                      className={`col-start-1 row-start-1 h-2 w-2 rounded-full bg-green-800`}
+                    ></div>
+                  )}
+                </div>
+                <label htmlFor="General Enquiry">General Enquiry</label>
+              </InputRadioLayout>
+              <InputRadioLayout
+                isSelected={inputSupportRequestRadioCheck}
+                {...register("supportRequest", {
+                  validate: () =>
+                    generalEnquiryRef.current.checked ||
+                    supportRequestRef.current.checked,
+                })}
+                onClick={() => {
+                  setValue("generalEnquiry", false);
+                  setValue("supportRequest", true);
+                  generalEnquiryRef.current.checked = false;
+                  supportRequestRef.current.checked = true;
+                  setInputSupportRequestRadioCheck(true);
+                  setInputGeneralEnquiryRadioCheck(false);
+                }}
+              >
+                <div className="grid place-items-center">
+                  <input
+                    type="radio"
+                    className={`col-start-1 row-start-1 h-4 w-4 appearance-none rounded-full border-[2px] ${supportRequestRef.current?.checked ? "border-green-800" : ""}`}
+                    {...register("supportRequest", {
+                      validate: () =>
+                        generalEnquiryRef.current.checked ||
+                        supportRequestRef.current.checked,
+                    })}
+                    ref={supportRequestRef}
+                  />
+                  {supportRequestRef.current?.checked && (
+                    <div
+                      className={`col-start-1 row-start-1 h-2 w-2 rounded-full bg-green-800`}
+                    ></div>
+                  )}
+                </div>
+                <label htmlFor="Support Request">Support Request</label>
+              </InputRadioLayout>
+            </div>
+            {(errors.generalEnquiry || errors.supportRequest) && (
+              <ErrorMessage message="Please select a query type" />
+            )}
+          </InputFormLayout>
+          <InputFormLayout>
+            <InputFormLabel labelName="Message" />
+            <InputTextAreaLayout isError={errors.message && true}>
+              <textarea
+                id=""
+                className="min-h-52 w-full outline-none"
+                {...register("message", {
+                  required: true,
+                  minLength: 1,
+                })}
+              ></textarea>
+            </InputTextAreaLayout>
+            {errors.message && (
+              <ErrorMessage message="This field is required" />
+            )}
+          </InputFormLayout>
+        </div>
+        <div className="mt-8">
+          <div className="flex items-center gap-4">
+            <input
+              type="checkbox"
+              className="h-4 w-4 accent-green-800 hover:cursor-pointer"
+              {...register("confirm", { required: true })}
+            />
+            <label htmlFor="">I consent to being contacted by the team *</label>
+          </div>
+          {errors.confirm && (
+            <ErrorMessage message="To submit this form, please consent to being contacted" />
+          )}
+        </div>
+        <button
+          className="hover: mt-8 flex h-10 w-full items-center justify-center rounded-md bg-green-800"
+          onSubmit={handleSubmit(submitHandler)}
+        >
+          <span className="text-white">Submit</span>
+        </button>
+      </form>
+    </>
   );
 };
 
