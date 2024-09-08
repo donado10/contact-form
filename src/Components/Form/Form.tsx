@@ -1,5 +1,5 @@
-import React, { ReactNode, useRef } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
+import React, { ReactNode, useRef, useState } from "react";
+import { SubmitHandler, useFieldArray, useForm } from "react-hook-form";
 
 const InputFormLabel: React.FC<{ labelName: string }> = ({ labelName }) => {
   return <label htmlFor={labelName}>{labelName} *</label>;
@@ -69,6 +69,11 @@ const Form = () => {
     formState: { errors },
   } = useForm<IFormInput>();
 
+  const [inputGeneralEnquiryRadioCheck, setInputGeneralEnquiryRadioCheck] =
+    useState<boolean>(false);
+  const [inputSupportRequestRadioCheck, setInputSupportRequestRadioCheck] =
+    useState<boolean>(false);
+
   const generalEnquiryRef =
     useRef() as React.MutableRefObject<HTMLInputElement>;
   const supportRequestRef =
@@ -77,6 +82,7 @@ const Form = () => {
   const submitHandler: SubmitHandler<IFormInput> = (data) => {
     console.log(data);
   };
+
   return (
     <form
       className="min-h-screen w-[90%] rounded-2xl bg-white p-8 md:w-[46rem]"
@@ -129,10 +135,10 @@ const Form = () => {
           <InputFormLabel labelName="Query Type" />
           <div className="flex flex-col justify-center gap-2 md:flex-row">
             <InputRadioLayout>
-              <div>
+              <div className="grid place-items-center">
                 <input
                   type="radio"
-                  className="w-full outline-none"
+                  className={`col-start-1 row-start-1 h-4 w-4 appearance-none rounded-full border-[2px] ${inputGeneralEnquiryRadioCheck ? "border-green-800" : ""}`}
                   {...register("generalEnquiry", {
                     validate: () =>
                       generalEnquiryRef.current.checked ||
@@ -141,16 +147,23 @@ const Form = () => {
                   ref={generalEnquiryRef}
                   onChange={() => {
                     supportRequestRef.current.checked = false;
+                    setInputSupportRequestRadioCheck(false);
+                    setInputGeneralEnquiryRadioCheck(true);
                   }}
                 />
+                {inputGeneralEnquiryRadioCheck && (
+                  <div
+                    className={`col-start-1 row-start-1 h-2 w-2 rounded-full bg-green-800`}
+                  ></div>
+                )}
               </div>
               <label htmlFor="General Enquiry">General Enquiry</label>
             </InputRadioLayout>
             <InputRadioLayout>
-              <div>
+              <div className="grid place-items-center">
                 <input
                   type="radio"
-                  className="w-full outline-none"
+                  className={`col-start-1 row-start-1 h-4 w-4 appearance-none rounded-full border-[2px] ${inputSupportRequestRadioCheck ? "border-green-800" : ""}`}
                   {...register("supportRequest", {
                     validate: () =>
                       generalEnquiryRef.current.checked ||
@@ -159,8 +172,15 @@ const Form = () => {
                   ref={supportRequestRef}
                   onChange={() => {
                     generalEnquiryRef.current.checked = false;
+                    setInputSupportRequestRadioCheck(true);
+                    setInputGeneralEnquiryRadioCheck(false);
                   }}
                 />
+                {inputSupportRequestRadioCheck && (
+                  <div
+                    className={`col-start-1 row-start-1 h-2 w-2 rounded-full bg-green-800`}
+                  ></div>
+                )}
               </div>
               <label htmlFor="Support Request">Support Request</label>
             </InputRadioLayout>
