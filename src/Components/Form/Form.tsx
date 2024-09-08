@@ -25,9 +25,26 @@ const InputTextLayout: React.FC<{ children: ReactNode; isError?: boolean }> = ({
   return <div className={classname}>{children}</div>;
 };
 
-const InputRadioLayout: React.FC<{ children: ReactNode }> = ({ children }) => {
+interface IInputRadioLayout extends React.HTMLAttributes<HTMLDivElement> {
+  children: ReactNode;
+  isSelected?: boolean;
+}
+
+const InputRadioLayout: React.FC<IInputRadioLayout> = ({
+  children,
+  isSelected = false,
+  ...props
+}) => {
+  let classname =
+    "flex h-10 w-full items-center gap-5 pl-6 rounded-md border-[1px] border-gray-500 p-1";
+
+  if (isSelected) {
+    classname =
+      "flex h-10 w-full items-center gap-5 pl-6 rounded-md border-[1px] border-green-800 bg-green-200 p-1";
+  }
+
   return (
-    <div className="flex h-10 w-full items-center gap-4 rounded-md border-[1px] border-gray-500 p-1">
+    <div className={classname} {...props}>
       {children}
     </div>
   );
@@ -134,7 +151,10 @@ const Form = () => {
         <InputFormLayout>
           <InputFormLabel labelName="Query Type" />
           <div className="flex flex-col justify-center gap-2 md:flex-row">
-            <InputRadioLayout>
+            <InputRadioLayout
+              isSelected={inputGeneralEnquiryRadioCheck}
+              {...register("generalEnquiry")}
+            >
               <div className="grid place-items-center">
                 <input
                   type="radio"
@@ -159,7 +179,7 @@ const Form = () => {
               </div>
               <label htmlFor="General Enquiry">General Enquiry</label>
             </InputRadioLayout>
-            <InputRadioLayout>
+            <InputRadioLayout isSelected={inputSupportRequestRadioCheck}>
               <div className="grid place-items-center">
                 <input
                   type="radio"
