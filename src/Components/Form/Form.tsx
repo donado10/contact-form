@@ -29,7 +29,7 @@ const Form = () => {
   const [inputSupportRequestRadioCheck, setInputSupportRequestRadioCheck] =
     useState<boolean>(false);
 
-  const submitHandler: SubmitHandler<IFormInput> = (data) => {
+  const submitHandler: SubmitHandler<IFormInput> = () => {
     reset();
     setInputGeneralEnquiryRadioCheck(false);
     setInputSupportRequestRadioCheck(false);
