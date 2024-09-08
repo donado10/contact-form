@@ -4,7 +4,11 @@ import SuccessIcon from "../../assets/images/icon-success-check.svg";
 export const InputFormLabel: React.FC<{ labelName: string }> = ({
   labelName,
 }) => {
-  return <label htmlFor={labelName}>{labelName} *</label>;
+  return (
+    <label htmlFor={labelName}>
+      {labelName} <span className="text-green-600">*</span>
+    </label>
+  );
 };
 export const InputFormLayout: React.FC<{ children: ReactNode }> = ({
   children,
@@ -19,11 +23,11 @@ export const InputTextLayout: React.FC<{
   isError?: boolean;
 }> = ({ children, isError = false }) => {
   let classname =
-    "flex h-10 w-full items-center justify-center rounded-md border-[1px] border-gray-500 p-1 hover:border-green-800";
+    "flex h-10 w-full items-center justify-center rounded-md border-[1px] border-gray-500 p-2 hover:border-green-800";
 
   if (isError) {
     classname =
-      "flex h-10 w-full items-center justify-center rounded-md border-[1px] border-red-600 p-1";
+      "flex h-10 w-full items-center justify-center rounded-md border-[1px] border-red-600 p-2";
   }
 
   return <div className={classname}>{children}</div>;
@@ -34,11 +38,11 @@ export const InputTextAreaLayout: React.FC<{
   isError?: boolean;
 }> = ({ children, isError = false }) => {
   let classname =
-    "flex h-fit w-full items-center gap-4 rounded-md border-[1px] border-gray-500 p-1 hover:border-green-800 ";
+    "flex h-fit w-full items-center gap-4 rounded-md border-[1px] border-gray-500 p-2 hover:border-green-800 ";
 
   if (isError) {
     classname =
-      "flex h-fit w-full items-center gap-4 rounded-md border-[1px] border-red-600 p-1";
+      "flex h-fit w-full items-center gap-4 rounded-md border-[1px] border-red-600 p-2";
   }
 
   return <div className={classname}>{children}</div>;

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
 import {
@@ -21,6 +21,8 @@ const Form = () => {
     setValue,
     reset,
   } = useForm<IFormInput>();
+
+  const inputConfirmRef = useRef() as React.MutableRefObject<HTMLInputElement>;
 
   const [inputGeneralEnquiryRadioCheck, setInputGeneralEnquiryRadioCheck] =
     useState<boolean>(false);
@@ -153,13 +155,22 @@ const Form = () => {
           </InputFormLayout>
         </div>
         <div className="mt-8">
-          <div className="flex items-center gap-4">
+          <div
+            className="flex items-center gap-4 hover:cursor-pointer"
+            onClick={() => {
+              inputConfirmRef.current.checked = true;
+              setValue("confirm", true);
+            }}
+          >
             <input
               type="checkbox"
               className="h-4 w-4 accent-green-800 hover:cursor-pointer"
               {...register("confirm", { required: true })}
+              ref={inputConfirmRef}
             />
-            <label htmlFor="">I consent to being contacted by the team *</label>
+            <label htmlFor="" className="hover:cursor-pointer">
+              I consent to being contacted by the team *
+            </label>
           </div>
           {errors.confirm && (
             <ErrorMessage message="To submit this form, please consent to being contacted" />
