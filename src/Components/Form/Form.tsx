@@ -30,25 +30,23 @@ interface IInputRadioLayout extends React.HTMLAttributes<HTMLDivElement> {
   isSelected?: boolean;
 }
 
-const InputRadioLayout: React.FC<IInputRadioLayout> = ({
-  children,
-  isSelected = false,
-  ...props
-}) => {
-  let classname =
-    "flex h-10 w-full items-center gap-5 pl-6 rounded-md border-[1px] border-gray-500 p-1";
+const InputRadioLayout: React.FC<IInputRadioLayout> = React.forwardRef(
+  ({ children, isSelected = false, ...props }, ref) => {
+    let classname =
+      "flex h-10 w-full items-center gap-5 pl-6 rounded-md border-[1px] border-gray-500 p-1";
 
-  if (isSelected) {
-    classname =
-      "flex h-10 w-full items-center gap-5 pl-6 rounded-md border-[1px] border-green-800 bg-green-200 p-1";
-  }
+    if (isSelected) {
+      classname =
+        "flex h-10 w-full items-center gap-5 pl-6 rounded-md border-[1px] border-green-800 bg-green-200 p-1";
+    }
 
-  return (
-    <div className={classname} {...props}>
-      {children}
-    </div>
-  );
-};
+    return (
+      <div className={classname} {...props}>
+        {children}
+      </div>
+    );
+  },
+);
 
 const InputTextAreaLayout: React.FC<{
   children: ReactNode;
@@ -84,6 +82,7 @@ const Form = () => {
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
   } = useForm<IFormInput>();
 
   const [inputGeneralEnquiryRadioCheck, setInputGeneralEnquiryRadioCheck] =
@@ -153,17 +152,25 @@ const Form = () => {
           <div className="flex flex-col justify-center gap-2 md:flex-row">
             <InputRadioLayout
               isSelected={inputGeneralEnquiryRadioCheck}
-              {...register("generalEnquiry")}
+              {...register("generalEnquiry", {
+                value: inputGeneralEnquiryRadioCheck,
+                validate: () =>
+                  generalEnquiryRef.current.checked ||
+                  supportRequestRef.current.checked,
+              })}
+              onClick={() => {
+                setValue("generalEnquiry", true);
+                setValue("supportRequest", false);
+                generalEnquiryRef.current.checked = true;
+                supportRequestRef.current.checked = false;
+                setInputSupportRequestRadioCheck(false);
+                setInputGeneralEnquiryRadioCheck(true);
+              }}
             >
               <div className="grid place-items-center">
                 <input
                   type="radio"
-                  className={`col-start-1 row-start-1 h-4 w-4 appearance-none rounded-full border-[2px] ${inputGeneralEnquiryRadioCheck ? "border-green-800" : ""}`}
-                  {...register("generalEnquiry", {
-                    validate: () =>
-                      generalEnquiryRef.current.checked ||
-                      supportRequestRef.current.checked,
-                  })}
+                  className={`col-start-1 row-start-1 h-4 w-4 appearance-none rounded-full border-[2px] ${generalEnquiryRef.current?.checked ? "border-green-800" : ""}`}
                   ref={generalEnquiryRef}
                   onChange={() => {
                     supportRequestRef.current.checked = false;
@@ -171,7 +178,7 @@ const Form = () => {
                     setInputGeneralEnquiryRadioCheck(true);
                   }}
                 />
-                {inputGeneralEnquiryRadioCheck && (
+                {generalEnquiryRef.current?.checked && (
                   <div
                     className={`col-start-1 row-start-1 h-2 w-2 rounded-full bg-green-800`}
                   ></div>
@@ -179,11 +186,26 @@ const Form = () => {
               </div>
               <label htmlFor="General Enquiry">General Enquiry</label>
             </InputRadioLayout>
-            <InputRadioLayout isSelected={inputSupportRequestRadioCheck}>
+            <InputRadioLayout
+              isSelected={inputSupportRequestRadioCheck}
+              {...register("supportRequest", {
+                validate: () =>
+                  generalEnquiryRef.current.checked ||
+                  supportRequestRef.current.checked,
+              })}
+              onClick={() => {
+                setValue("generalEnquiry", false);
+                setValue("supportRequest", true);
+                generalEnquiryRef.current.checked = false;
+                supportRequestRef.current.checked = true;
+                setInputSupportRequestRadioCheck(true);
+                setInputGeneralEnquiryRadioCheck(false);
+              }}
+            >
               <div className="grid place-items-center">
                 <input
                   type="radio"
-                  className={`col-start-1 row-start-1 h-4 w-4 appearance-none rounded-full border-[2px] ${inputSupportRequestRadioCheck ? "border-green-800" : ""}`}
+                  className={`col-start-1 row-start-1 h-4 w-4 appearance-none rounded-full border-[2px] ${supportRequestRef.current?.checked ? "border-green-800" : ""}`}
                   {...register("supportRequest", {
                     validate: () =>
                       generalEnquiryRef.current.checked ||
@@ -196,7 +218,7 @@ const Form = () => {
                     setInputGeneralEnquiryRadioCheck(false);
                   }}
                 />
-                {inputSupportRequestRadioCheck && (
+                {supportRequestRef.current?.checked && (
                   <div
                     className={`col-start-1 row-start-1 h-2 w-2 rounded-full bg-green-800`}
                   ></div>
