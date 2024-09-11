@@ -10,7 +10,7 @@ const InputRadioLayout: React.FC<{ children: ReactNode }> = ({ children }) => {
 };
 
 const InputRadio: React.FC<IInputRadioLayout> = React.forwardRef(
-  ({ labelName, isSelected = false, ...props }, ref) => {
+  ({ labelName, id, isSelected = false, ...props }, ref) => {
     let radioRef = useRef() as React.MutableRefObject<HTMLInputElement>;
 
     if (ref) {
@@ -32,6 +32,7 @@ const InputRadio: React.FC<IInputRadioLayout> = React.forwardRef(
             type="radio"
             className={`col-start-1 row-start-1 h-4 w-4 appearance-none rounded-full border-[2px] ${isSelected ? "border-green-800" : "border-gray-300"}`}
             ref={radioRef}
+            name={labelName}
           />
           {isSelected && (
             <div
@@ -39,7 +40,7 @@ const InputRadio: React.FC<IInputRadioLayout> = React.forwardRef(
             ></div>
           )}
         </InputRadioLayout>
-        <label htmlFor="Support Request" className="hover:cursor-pointer">
+        <label id={id} className="hover:cursor-pointer">
           {labelName}
         </label>
       </div>

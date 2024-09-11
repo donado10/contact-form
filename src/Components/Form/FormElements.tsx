@@ -1,11 +1,12 @@
 import React, { ReactNode } from "react";
 import SuccessIcon from "../../assets/images/icon-success-check.svg";
 
-export const InputFormLabel: React.FC<{ labelName: string }> = ({
+export const InputFormLabel: React.FC<{ id: string; labelName: string }> = ({
   labelName,
+  id,
 }) => {
   return (
-    <label htmlFor={labelName}>
+    <label id={id} htmlFor={labelName}>
       {labelName} <span className="text-green-600">*</span>
     </label>
   );
@@ -72,7 +73,7 @@ export const ValidFormMessage = () => {
     >
       <div className="ml-3 flex items-center gap-3">
         <span>
-          <img src={SuccessIcon} alt="success" />
+          <img src={SuccessIcon} alt="" />
         </span>
         <span className="text-base">Message Sent!</span>
       </div>

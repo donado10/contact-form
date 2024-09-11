@@ -53,13 +53,14 @@ const Form = () => {
         </h1>
         <div className="flex flex-col justify-center gap-4">
           <InputFormLayout>
-            <InputFormLabel labelName="First Name" />
+            <InputFormLabel id={"firstname"} labelName="First Name" />
             <InputTextLayout isError={errors.firstname && true}>
               <input
-                autoComplete="new-off"
+                id="firstname"
                 type="text"
                 className="w-full bg-transparent outline-none"
                 {...register("firstname", { required: true })}
+                name="firstname"
               />
             </InputTextLayout>
             {errors.firstname && (
@@ -67,13 +68,14 @@ const Form = () => {
             )}
           </InputFormLayout>
           <InputFormLayout>
-            <InputFormLabel labelName="Last Name" />
+            <InputFormLabel id={"lastname"} labelName="Last Name" />
             <InputTextLayout isError={errors.lastname && true}>
               <input
-                autoComplete="new-off"
+                id="lastname"
                 type="text"
                 className="w-full outline-none"
                 {...register("lastname", { required: true })}
+                name="lastname"
               />
             </InputTextLayout>
             {errors.lastname && (
@@ -81,16 +83,17 @@ const Form = () => {
             )}
           </InputFormLayout>
           <InputFormLayout>
-            <InputFormLabel labelName="Email Address" />
+            <InputFormLabel id={"mail"} labelName="Email Address" />
             <InputTextLayout isError={errors.mail && true}>
               <input
-                autoComplete="new-off"
+                id={"mail"}
                 type="email"
                 className="w-full outline-none"
                 {...register("mail", {
                   required: true,
                   pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
                 })}
+                name="mail"
               />
             </InputTextLayout>
             {errors.mail && (
@@ -99,7 +102,9 @@ const Form = () => {
           </InputFormLayout>
 
           <InputFormLayout>
-            <InputFormLabel labelName="Query Type" />
+            <h1>
+              Query Type <span className="text-green-600">*</span>
+            </h1>
             <div className="flex flex-col justify-center gap-2 md:flex-row">
               <InputRadio
                 isSelected={inputGeneralEnquiryRadioCheck}
@@ -116,6 +121,7 @@ const Form = () => {
                   setInputGeneralEnquiryRadioCheck(true);
                 }}
                 labelName="General Enquiry"
+                id="generalenquiry"
               />
               <InputRadio
                 isSelected={inputSupportRequestRadioCheck}
@@ -131,6 +137,7 @@ const Form = () => {
                   setInputGeneralEnquiryRadioCheck(false);
                 }}
                 labelName="Support Request"
+                id="supportrequest"
               />
             </div>
             {(errors.generalEnquiry || errors.supportRequest) && (
@@ -138,10 +145,10 @@ const Form = () => {
             )}
           </InputFormLayout>
           <InputFormLayout>
-            <InputFormLabel labelName="Message" />
+            <InputFormLabel id="message" labelName="Message" />
             <InputTextAreaLayout isError={errors.message && true}>
               <textarea
-                id=""
+                id="message"
                 className="min-h-52 w-full outline-none"
                 {...register("message", {
                   required: true,
@@ -166,11 +173,12 @@ const Form = () => {
           >
             <input
               type="checkbox"
+              id="confirm"
               className="h-4 w-4 accent-green-800 hover:cursor-pointer"
               {...register("confirm", { required: true })}
               ref={inputConfirmRef}
             />
-            <label htmlFor="" className="hover:cursor-pointer">
+            <label id="confirm" className="hover:cursor-pointer">
               I consent to being contacted by the team{" "}
               <span className="text-green-600">*</span>
             </label>
