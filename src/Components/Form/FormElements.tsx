@@ -6,7 +6,7 @@ export const InputFormLabel: React.FC<{ id: string; labelName: string }> = ({
   id,
 }) => {
   return (
-    <label id={id} htmlFor={labelName}>
+    <label htmlFor={id}>
       {labelName} <span className="text-green-600">*</span>
     </label>
   );
