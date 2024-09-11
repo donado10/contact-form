@@ -49,8 +49,15 @@ export const InputTextAreaLayout: React.FC<{
   return <div className={classname}>{children}</div>;
 };
 
-export const ErrorMessage: React.FC<{ message: string }> = ({ message }) => {
-  return <span className="text-base text-red-600">{message}</span>;
+export const ErrorMessage: React.FC<{ id: string; message: string }> = ({
+  id,
+  message,
+}) => {
+  return (
+    <span aria-describedby={id} className="text-base text-red-600">
+      {message}
+    </span>
+  );
 };
 
 export interface IFormInput {

@@ -64,7 +64,7 @@ const Form = () => {
               />
             </InputTextLayout>
             {errors.firstname && (
-              <ErrorMessage message="This field is required" />
+              <ErrorMessage id="firstname" message="This field is required" />
             )}
           </InputFormLayout>
           <InputFormLayout>
@@ -79,7 +79,7 @@ const Form = () => {
               />
             </InputTextLayout>
             {errors.lastname && (
-              <ErrorMessage message="This field is required" />
+              <ErrorMessage id="lastname" message="This field is required" />
             )}
           </InputFormLayout>
           <InputFormLayout>
@@ -97,7 +97,10 @@ const Form = () => {
               />
             </InputTextLayout>
             {errors.mail && (
-              <ErrorMessage message="Please enter a valid email address" />
+              <ErrorMessage
+                id="mail"
+                message="Please enter a valid email address"
+              />
             )}
           </InputFormLayout>
 
@@ -141,7 +144,7 @@ const Form = () => {
               />
             </div>
             {(errors.generalEnquiry || errors.supportRequest) && (
-              <ErrorMessage message="Please select a query type" />
+              <ErrorMessage id="" message="Please select a query type" />
             )}
           </InputFormLayout>
           <InputFormLayout>
@@ -157,7 +160,7 @@ const Form = () => {
               ></textarea>
             </InputTextAreaLayout>
             {errors.message && (
-              <ErrorMessage message="This field is required" />
+              <ErrorMessage id="message" message="This field is required" />
             )}
           </InputFormLayout>
         </div>
@@ -184,7 +187,10 @@ const Form = () => {
             </label>
           </div>
           {errors.confirm && (
-            <ErrorMessage message="To submit this form, please consent to being contacted" />
+            <ErrorMessage
+              id="confirm"
+              message="To submit this form, please consent to being contacted"
+            />
           )}
         </div>
         <button
