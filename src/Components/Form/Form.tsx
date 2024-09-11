@@ -178,7 +178,7 @@ const Form = () => {
               {...register("confirm", { required: true })}
               ref={inputConfirmRef}
             />
-            <label id="confirm" className="hover:cursor-pointer">
+            <label htmlFor="confirm" className="hover:cursor-pointer">
               I consent to being contacted by the team{" "}
               <span className="text-green-600">*</span>
             </label>
