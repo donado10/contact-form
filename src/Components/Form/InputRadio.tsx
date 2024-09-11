@@ -32,7 +32,6 @@ const InputRadio: React.FC<IInputRadioLayout> = React.forwardRef(
             type="radio"
             className={`col-start-1 row-start-1 h-4 w-4 appearance-none rounded-full border-[2px] ${isSelected ? "border-green-800" : "border-gray-300"}`}
             ref={radioRef}
-            name={labelName}
           />
           {isSelected && (
             <div
